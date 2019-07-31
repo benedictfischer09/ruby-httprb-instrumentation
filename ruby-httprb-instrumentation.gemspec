@@ -1,11 +1,11 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "ruby/httprb/instrumentation/version"
+require "http/instrumentation/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "ruby-httprb-instrumentation"
-  spec.version       = Ruby::Httprb::Instrumentation::VERSION
+  spec.version       = HTTP::Instrumentation::VERSION
   spec.authors       = ["Ben Fischer"]
   spec.email         = ["ben.fischer.810@gmail.com"]
 

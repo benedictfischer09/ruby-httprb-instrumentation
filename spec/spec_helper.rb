@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "ruby/httprb/instrumentation"
+require "http/instrumentation"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
