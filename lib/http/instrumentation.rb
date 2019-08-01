@@ -1,4 +1,6 @@
-require "http/instrumentation/version"
+# frozen_string_literal: true
+
+require 'http/instrumentation/version'
 
 module HTTP
   module Instrumentation
