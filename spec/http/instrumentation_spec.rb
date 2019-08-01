@@ -3,18 +3,20 @@
 require 'uri'
 
 RSpec.describe HTTP::Instrumentation do
-  Options = Struct.new(:headers)
+
 
   module HTTP
+    Options = Struct.new(:headers)
+
     class Client
-      def request(_verb, _uri, _opts = {}); end
+      def request(_verb, _uri, _opts = Options.new); end
     end
   end
 
   context 'without instrumentation' do
     it 'does not add headers' do
       uri = URI('http://localhost:3000')
-      opts = Options.new('x-test' => 'foobar')
+      opts = HTTP::Options.new('x-test' => 'foobar')
       client = HTTP::Client.new
 
       allow(client).to receive(:request)
@@ -90,7 +92,7 @@ RSpec.describe HTTP::Instrumentation do
       client = HTTP::Client.new
       allow(client).to receive(:request_original).and_return(error)
 
-      client.request('GET', URI('http://localhost:3000'), Options.new)
+      client.request('GET', URI('http://localhost:3000'))
 
       expect(span).to have_received(:set_tag).with('http.status_code', 500)
       expect(span).to have_received(:set_tag).with('error', true)

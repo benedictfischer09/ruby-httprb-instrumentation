@@ -30,7 +30,7 @@ module HTTP
         ::HTTP::Client.class_eval do
           alias_method :request_original, :request
 
-          def request(verb, uri, opts = {})
+          def request(verb, uri, opts = HTTP::Options.new)
             parsed_uri = uri.is_a?(String) ? URI(uri) : uri
 
             if ::HTTP::Instrumentation.ignore_request.call(verb, uri, opts)
