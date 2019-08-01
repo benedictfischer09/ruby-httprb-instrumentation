@@ -3,10 +3,12 @@
 require 'uri'
 
 RSpec.describe HTTP::Instrumentation do
-
-
   module HTTP
-    Options = Struct.new(:headers)
+    Options = Struct.new(:headers) do
+      def merge(_opts)
+        self
+      end
+    end
 
     class Client
       def request(_verb, _uri, _opts = Options.new); end

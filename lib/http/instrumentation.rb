@@ -30,11 +30,12 @@ module HTTP
         ::HTTP::Client.class_eval do
           alias_method :request_original, :request
 
-          def request(verb, uri, opts = HTTP::Options.new)
+          def request(verb, uri, opts = {})
+            options = HTTP::Options.new.merge(opts)
             parsed_uri = uri.is_a?(String) ? URI(uri) : uri
 
-            if ::HTTP::Instrumentation.ignore_request.call(verb, uri, opts)
-              res = request_original(verb, uri, opts)
+            if ::HTTP::Instrumentation.ignore_request.call(verb, uri, options)
+              res = request_original(verb, uri, options)
             else
               tags = {
                 'component' => 'HTTP',
@@ -48,9 +49,9 @@ module HTTP
               tracer = ::HTTP::Instrumentation.tracer
 
               tracer.start_active_span('http.request', tags: tags) do |scope|
-                OpenTracing.inject(scope.span.context, OpenTracing::FORMAT_RACK, opts.headers)
+                OpenTracing.inject(scope.span.context, OpenTracing::FORMAT_RACK, options.headers)
 
-                res = request_original(verb, uri, opts)
+                res = request_original(verb, uri, options)
 
                 scope.span.set_tag('http.status_code', res.status)
                 scope.span.set_tag('error', true) if res.is_a?(StandardError)
