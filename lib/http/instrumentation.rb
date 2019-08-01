@@ -31,6 +31,8 @@ module HTTP
           alias_method :request_original, :request
 
           def request(verb, uri, opts = {})
+            parsed_uri = uri.is_a?(String) ? URI(uri) : uri
+
             if ::HTTP::Instrumentation.ignore_request.call(verb, uri, opts)
               res = request_original(verb, uri, opts)
             else
@@ -38,9 +40,9 @@ module HTTP
                 'component' => 'HTTP',
                 'span.kind' => 'client',
                 'http.method' => verb,
-                'http.url' => uri.path,
-                'peer.host' => uri.host,
-                'peer.port' => uri.port
+                'http.url' => parsed_uri.path,
+                'peer.host' => parsed_uri.host,
+                'peer.port' => parsed_uri.port
               }
 
               tracer = ::HTTP::Instrumentation.tracer
