@@ -19,6 +19,10 @@ Or install it yourself as:
     $ gem install ruby-httprb-instrumentation
 
 ## Usage
+First load the instrumentation (Note: this won't automatically instrument the http gem)
+```
+require "http/instrumentation"
+```
 
 If you have setup `OpenTracing.global_tracer` you can turn on spans for all requests with just:
 ```
