@@ -1,8 +1,6 @@
 # HTTP::Instrumentation
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `http/instrumentation`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Open Tracing instrumentation for the [http gem](https://github.com/httprb/http). By default it starts a new span for every request and follows the open tracing tagging [semantic conventions](https://opentracing.io/specification/conventions)
 
 ## Installation
 
@@ -21,18 +19,31 @@ Or install it yourself as:
     $ gem install ruby-httprb-instrumentation
 
 ## Usage
+First load the instrumentation (Note: this won't automatically instrument the http gem)
+```
+require "http/instrumentation"
+```
 
-TODO: Write usage instructions here
+If you have setup `OpenTracing.global_tracer` you can turn on spans for all requests with just:
+```
+    HTTP::Instrumentation.instrument
+```
+
+If you need more control over the tracer or which requests get their own span you can configure both settings like:
+```
+    HTTP::Instrumentation.instrument(
+        tracer: tracer,
+        ignore_request: ->(verb, uri, opts) { uri.host == 'localhost' }
+    )
+```
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After checking out the repo, run `bundle install` to install dependencies. Then, run `rspec` to run the tests.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ruby-httprb-instrumentation. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/benedictfischer09/ruby-httprb-instrumentation. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +51,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Ruby::Httprb::Instrumentation project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/ruby-httprb-instrumentation/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the HTTP::Instrumentation project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/benedictfischer09/ruby-httprb-instrumentation/blob/master/CODE_OF_CONDUCT.md).
