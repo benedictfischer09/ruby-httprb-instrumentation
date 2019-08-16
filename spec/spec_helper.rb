@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require 'http/instrumentation'
-require 'byebug'
+require 'http/tracer'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

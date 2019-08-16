@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'http/instrumentation/version'
+require 'http/tracer/version'
 require 'opentracing'
 
 module HTTP
-  module Instrumentation
+  module Tracer
     class << self
       attr_accessor :ignore_request, :tracer
 
@@ -34,7 +34,7 @@ module HTTP
             options = HTTP::Options.new.merge(opts)
             parsed_uri = uri.is_a?(String) ? URI(uri) : uri
 
-            if ::HTTP::Instrumentation.ignore_request.call(verb, uri, options)
+            if ::HTTP::Tracer.ignore_request.call(verb, uri, options)
               res = request_original(verb, uri, options)
             else
               tags = {
@@ -46,7 +46,7 @@ module HTTP
                 'peer.port' => parsed_uri.port
               }
 
-              tracer = ::HTTP::Instrumentation.tracer
+              tracer = ::HTTP::Tracer.tracer
 
               tracer.start_active_span('http.request', tags: tags) do |scope|
                 OpenTracing.inject(scope.span.context, OpenTracing::FORMAT_RACK, options.headers)

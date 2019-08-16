@@ -2,7 +2,7 @@
 
 require 'uri'
 
-RSpec.describe HTTP::Instrumentation do
+RSpec.describe HTTP::Tracer do
   module HTTP
     Options = Struct.new(:headers) do
       def merge(_opts)
@@ -31,12 +31,12 @@ RSpec.describe HTTP::Instrumentation do
 
   context 'with instrumentation' do
     after do
-      HTTP::Instrumentation.remove
+      HTTP::Tracer.remove
     end
 
     it 'starts a span for the request' do
       tracer = double(start_active_span: true)
-      HTTP::Instrumentation.instrument(tracer: tracer)
+      HTTP::Tracer.instrument(tracer: tracer)
       client = HTTP::Client.new
 
       client.request('GET', URI('http://localhost:3000'))
@@ -46,7 +46,7 @@ RSpec.describe HTTP::Instrumentation do
 
     it 'can be configured to skip creating a span for some requests' do
       tracer = double(start_active_span: true)
-      HTTP::Instrumentation.instrument(
+      HTTP::Tracer.instrument(
         tracer: tracer,
         ignore_request: ->(_, uri, _) { uri.host == 'localhost' }
       )
@@ -63,7 +63,7 @@ RSpec.describe HTTP::Instrumentation do
 
     it 'follows semantic conventions for the span tags' do
       tracer = double(start_active_span: true)
-      HTTP::Instrumentation.instrument(tracer: tracer)
+      HTTP::Tracer.instrument(tracer: tracer)
       client = HTTP::Client.new
 
       client.request('POST', URI('http://localhost/api/data'))
@@ -90,7 +90,7 @@ RSpec.describe HTTP::Instrumentation do
       tracer = double(start_active_span: true)
       allow(tracer).to receive(:start_active_span).and_yield(scope)
 
-      HTTP::Instrumentation.instrument(tracer: tracer)
+      HTTP::Tracer.instrument(tracer: tracer)
       client = HTTP::Client.new
       allow(client).to receive(:request_original).and_return(error)
 
