@@ -71,7 +71,7 @@ RSpec.describe HTTP::Tracer do
       expect(tracer).to have_received(:start_active_span).with(
         'http.request',
         tags: {
-          'component' => 'HTTP',
+          'component' => 'ruby-httprb',
           'span.kind' => 'client',
           'http.method' => 'POST',
           'http.url' => '/api/data',

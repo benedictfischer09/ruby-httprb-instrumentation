@@ -38,7 +38,7 @@ module HTTP
               res = request_original(verb, uri, options)
             else
               tags = {
-                'component' => 'HTTP',
+                'component' => 'ruby-httprb',
                 'span.kind' => 'client',
                 'http.method' => verb,
                 'http.url' => parsed_uri.path,
