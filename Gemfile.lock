@@ -1,8 +1,7 @@
 PATH
   remote: .
   specs:
-    httprb-opentracing (0.1.0)
-      http (> 0.1.0)
+    httprb-opentracing (0.2.0)
       opentracing (~> 0.5.0)
 
 GEM
@@ -59,6 +58,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 2.0)
   byebug
+  http (> 0.1.0)
   httprb-opentracing!
   opentracing_test_tracer (~> 0.1)
   rake (~> 10.0)

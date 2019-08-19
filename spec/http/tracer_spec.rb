@@ -1,24 +1,13 @@
 # frozen_string_literal: true
 
 require 'uri'
+require 'http'
 
 RSpec.describe HTTP::Tracer do
-  module HTTP
-    Options = Struct.new(:headers) do
-      def merge(_opts)
-        self
-      end
-    end
-
-    class Client
-      def request(_verb, _uri, _opts = Options.new); end
-    end
-  end
-
   context 'without instrumentation' do
     it 'does not add headers' do
       uri = URI('http://localhost:3000')
-      opts = HTTP::Options.new('x-test' => 'foobar')
+      opts = HTTP::Options.new
       client = HTTP::Client.new
 
       allow(client).to receive(:request)
@@ -51,10 +40,12 @@ RSpec.describe HTTP::Tracer do
         ignore_request: ->(_, uri, _) { uri.host == 'localhost' }
       )
       client = HTTP::Client.new
+      allow(client).to receive(:request_original)
 
       client.request('GET', URI('http://localhost:3000'))
 
       expect(tracer).not_to have_received(:start_active_span)
+      expect(client).to have_received(:request_original)
 
       client.request('GET', URI('http://myhost.com:3000'))
 

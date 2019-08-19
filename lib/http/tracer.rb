@@ -11,9 +11,20 @@ module HTTP
       IngoreRequest = ->(_verb, _uri, _opts) { false }
 
       def instrument(tracer: OpenTracing.global_tracer, ignore_request: IngoreRequest)
+        begin
+          require 'http'
+        rescue LoadError
+          return
+        end
+        raise IncompatibleGemVersion unless compatible_version?
+
         @ignore_request = ignore_request
         @tracer = tracer
         patch_request
+      end
+
+      def compatible_version?
+        Gem::Version.new(HTTP::VERSION) >= Gem::Version.new("0.1.0")
       end
 
       def remove
