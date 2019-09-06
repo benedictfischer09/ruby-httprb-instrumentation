@@ -48,13 +48,18 @@ module HTTP
             if ::HTTP::Tracer.ignore_request.call(verb, uri, options)
               res = request_original(verb, uri, options)
             else
+              path, host, port = nil
+              path = parsed_uri.path if parsed_uri.respond_to?(:path)
+              host = parsed_uri.host if parsed_uri.respond_to?(:host)
+              port = parsed_uri.port if parsed_uri.respond_to?(:port)
+
               tags = {
                 'component' => 'ruby-httprb',
                 'span.kind' => 'client',
                 'http.method' => verb,
-                'http.url' => parsed_uri.path,
-                'peer.host' => parsed_uri.host,
-                'peer.port' => parsed_uri.port
+                'http.url' => path,
+                'peer.host' => host,
+                'peer.port' => port
               }
 
               tracer = ::HTTP::Tracer.tracer
