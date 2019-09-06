@@ -37,6 +37,8 @@ If you need more control over the tracer or which requests get their own span yo
     )
 ```
 
+Note: If the callback provided to ignore request throws an error the request will be made withou tracing
+
 ## Development
 
 After checking out the repo, run `bundle install` to install dependencies. Then, run `rspec` to run the tests.

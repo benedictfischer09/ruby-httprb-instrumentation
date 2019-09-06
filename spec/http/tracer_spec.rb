@@ -52,6 +52,20 @@ RSpec.describe HTTP::Tracer do
       expect(tracer).to have_received(:start_active_span)
     end
 
+    it 'still makes the request when ignore request fails' do
+      tracer = double(start_active_span: true)
+      HTTP::Tracer.instrument(
+        tracer: tracer,
+        ignore_request: ->(_, uri, _) { raise 'error' }
+      )
+      client = HTTP::Client.new
+      allow(client).to receive(:request_original)
+
+      client.request('GET', URI('http://localhost:3000'))
+
+      expect(client).to have_received(:request_original)
+    end
+
     it 'follows semantic conventions for the span tags' do
       tracer = double(start_active_span: true)
       HTTP::Tracer.instrument(tracer: tracer)

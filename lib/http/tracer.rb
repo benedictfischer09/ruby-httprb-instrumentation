@@ -45,7 +45,13 @@ module HTTP
             options = HTTP::Options.new.merge(opts)
             parsed_uri = uri.is_a?(String) ? URI(uri) : uri
 
-            if ::HTTP::Tracer.ignore_request.call(verb, uri, options)
+            begin
+              skip = ::HTTP::Tracer.ignore_request.call(verb, uri, options)
+            rescue StandardError
+              skip = true
+            end
+
+            if skip
               res = request_original(verb, uri, options)
             else
               path, host, port = nil
