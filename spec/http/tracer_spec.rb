@@ -72,29 +72,6 @@ RSpec.describe HTTP::Tracer do
       )
     end
 
-    # it 'handles non standard URI object from client' do
-    #   CustomURI = Struct.new(:host)
-    #   uri = CustomURI.new("localhost")
-
-    #   tracer = double(start_active_span: true)
-    #   HTTP::Tracer.instrument(tracer: tracer)
-    #   client = HTTP::Client.new
-
-    #   client.request('POST', uri)
-
-    #   expect(tracer).to have_received(:start_active_span).with(
-    #     'http.request',
-    #     tags: {
-    #       'component' => 'ruby-httprb',
-    #       'span.kind' => 'client',
-    #       'http.method' => 'POST',
-    #       'http.url' => nil,
-    #       'peer.host' => 'localhost',
-    #       'peer.port' => nil
-    #     }
-    #   )
-    # end
-
     it 'tags the span as an error when the response is an error' do
       error = StandardError.new('500 error')
       allow(error).to receive(:status).and_return(500)
