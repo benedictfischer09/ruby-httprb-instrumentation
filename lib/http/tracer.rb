@@ -8,7 +8,7 @@ module HTTP
     class << self
       attr_accessor :ignore_request, :tracer
 
-      IngoreRequest = ->(_verb, _uri, _opts) { false }
+      IngoreRequest = ->(_request, _options) { false }
 
       def instrument(tracer: OpenTracing.global_tracer, ignore_request: IngoreRequest)
         begin
@@ -20,7 +20,7 @@ module HTTP
 
         @ignore_request = ignore_request
         @tracer = tracer
-        patch_request
+        patch_perform
       end
 
       def compatible_version?
@@ -28,30 +28,26 @@ module HTTP
       end
 
       def remove
-        return unless ::HTTP::Client.method_defined?(:request_original)
+        return unless ::HTTP::Client.method_defined?(:perform_without_tracing)
 
         ::HTTP::Client.class_eval do
-          remove_method :request
-          alias_method :request, :request_original
-          remove_method :request_original
+          remove_method :perform
+          alias_method :perform, :perform_without_tracing
+          remove_method :perform_without_tracing
         end
       end
 
-      def patch_request
+      def patch_perform
         ::HTTP::Client.class_eval do
-          alias_method :request_original, :request
-
-          def request(verb, uri, opts = {})
-            options = HTTP::Options.new.merge(opts)
-            parsed_uri = uri.is_a?(String) ? URI(uri) : uri
-
-            if ::HTTP::Tracer.ignore_request.call(verb, uri, options)
-              res = request_original(verb, uri, options)
+          def perform_with_tracing(request, options)
+            if ::HTTP::Tracer.ignore_request.call(request, options)
+              res = perform_without_tracing(request, options)
             else
-              path, host, port = nil
-              path = parsed_uri.path if parsed_uri.respond_to?(:path)
-              host = parsed_uri.host if parsed_uri.respond_to?(:host)
-              port = parsed_uri.port if parsed_uri.respond_to?(:port)
+              path, host, port, verb = nil
+              path = request.uri.path if request.uri.respond_to?(:path)
+              host = request.uri.host if request.uri.respond_to?(:host)
+              port = request.uri.port if request.uri.respond_to?(:port)
+              verb = request.verb.to_s.upcase if request.respond_to?(:verb)
 
               tags = {
                 'component' => 'ruby-httprb',
@@ -60,14 +56,14 @@ module HTTP
                 'http.url' => path,
                 'peer.host' => host,
                 'peer.port' => port
-              }
+              }.compact
 
               tracer = ::HTTP::Tracer.tracer
 
               tracer.start_active_span('http.request', tags: tags) do |scope|
                 OpenTracing.inject(scope.span.context, OpenTracing::FORMAT_RACK, options.headers)
 
-                res = request_original(verb, uri, options)
+                res = perform_without_tracing(request, options)
 
                 scope.span.set_tag('http.status_code', res.status)
                 scope.span.set_tag('error', true) if res.is_a?(StandardError)
@@ -76,6 +72,9 @@ module HTTP
 
             res
           end
+
+          alias perform_without_tracing perform
+          alias perform perform_with_tracing
         end
       end
     end

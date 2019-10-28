@@ -33,7 +33,7 @@ If you need more control over the tracer or which requests get their own span yo
 ```
     HTTP::Tracer.instrument(
         tracer: tracer,
-        ignore_request: ->(verb, uri, opts) { uri.host == 'localhost' }
+        ignore_request: ->(request, opts) { request.uri.host == 'localhost' }
     )
 ```
 
