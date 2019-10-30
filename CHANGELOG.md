@@ -1,5 +1,8 @@
 Changelog
 =========
+## 0.4.0 10/30/2019
+  * Patch the perform method instead of the request method
+  * Fixes bug with not following redirects
 
 ## 0.3.0 09/06/2019
   * Be defensive with the URI object provided from the client
