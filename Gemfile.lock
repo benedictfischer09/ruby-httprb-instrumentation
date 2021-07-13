@@ -7,7 +7,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     byebug (11.0.1)
     crack (0.4.3)
@@ -28,7 +28,7 @@ GEM
     opentracing (0.5.0)
     opentracing_test_tracer (0.1.1)
       opentracing
-    public_suffix (4.0.1)
+    public_suffix (4.0.6)
     rake (10.5.0)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
