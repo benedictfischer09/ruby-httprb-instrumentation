@@ -61,7 +61,7 @@ module HTTP
               tracer = ::HTTP::Tracer.tracer
 
               tracer.start_active_span('http.request', tags: tags) do |scope|
-                OpenTracing.inject(scope.span.context, OpenTracing::FORMAT_RACK, options.headers)
+                OpenTracing.inject(scope.span.context, OpenTracing::FORMAT_RACK, request.headers)
 
                 res = perform_without_tracing(request, options)
 
